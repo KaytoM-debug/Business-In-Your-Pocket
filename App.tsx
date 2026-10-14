@@ -268,8 +268,8 @@ export default function App() {
       <StatusBar style="dark" />
       <View style={styles.header}>
         <View>
-          <Text style={styles.eyebrow}>MONDAY, SEPTEMBER 7</Text>
-          <Text style={styles.title}>{activeTab === 'Overview' ? `Good morning, ${profile?.name || 'there'}` : activeTab}</Text>
+          <Text style={styles.eyebrow}>{new Date().toDateString().toUpperCase()}</Text>
+          <Text style={styles.title}>{activeTab === 'Overview' ? `Good ${new Date().getHours()<12?'morning':new Date().getHours()<17?'afternoon':'evening'}, ${profile?.name || 'there'}` : activeTab}</Text>
         </View>
         <Pressable
           accessibilityLabel="Open profile"
