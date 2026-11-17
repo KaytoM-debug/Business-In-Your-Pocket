@@ -8,10 +8,14 @@ export const currencySymbols: Record<EastAfricanCurrency, string> = {
   BIF: 'BIF',
   SSP: 'SSP',
   ETB: 'ETB',
+  NGN: 'NGN',
+  USD: 'USD',
 };
 
 const currencyByRegion: Record<string, EastAfricanCurrency> = {
   UG: 'UGX', KE: 'KES', TZ: 'TZS', RW: 'RWF', BI: 'BIF', SS: 'SSP', ET: 'ETB',
+  NG: 'NGN',
+  US: 'USD',
 };
 
 let activeCurrency: EastAfricanCurrency = 'UGX';

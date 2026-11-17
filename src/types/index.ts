@@ -50,10 +50,11 @@ export interface DailyMetrics {
   profit: number;
 }
 
-export type EastAfricanCurrency = 'UGX' | 'KES' | 'TZS' | 'RWF' | 'BIF' | 'SSP' | 'ETB';
+export type EastAfricanCurrency = 'UGX' | 'KES' | 'TZS' | 'RWF' | 'BIF' | 'SSP' | 'ETB' | 'NGN' | 'USD';
 
 export interface UserProfile {
   name: string;
   email?: string;
   phone?: string;
+  currency?: EastAfricanCurrency;
 }
