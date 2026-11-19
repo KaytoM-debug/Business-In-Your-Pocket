@@ -359,6 +359,7 @@ export default function App() {
         onSave={async (updatedProfile) => {
           await storageService.saveProfile(updatedProfile);
           setProfile(updatedProfile);
+          setActiveCurrency(updatedProfile.currency || detectCurrency());
         }}
       />
     </SafeAreaView>
