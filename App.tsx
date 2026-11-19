@@ -66,7 +66,7 @@ export default function App() {
         if (!loadedProfile) {
           setShowProfileModal(true);
         }
-        setActiveCurrency(detectCurrency());
+        setActiveCurrency(loadedProfile?.currency || detectCurrency());
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
