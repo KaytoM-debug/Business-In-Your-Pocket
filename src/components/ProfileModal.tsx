@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
-import { UserProfile } from '../types/index';
+import { UserProfile, EastAfricanCurrency } from '../types/index';
+import { currencySymbols, detectCurrency } from '../utils/calculations';
 
 interface ProfileModalProps {
   visible: boolean;
@@ -9,18 +10,20 @@ interface ProfileModalProps {
   onClose: () => void;
   onSave: (profile: UserProfile) => void;
 }
-
+const CURRENCIES = Object.keys(currencySymbols) as EastAfricanCurrency[];
 export const ProfileModal: React.FC<ProfileModalProps> = ({ visible, profile, required = false, onClose, onSave }) => {
   const [name, setName] = React.useState(profile.name);
   const [email, setEmail] = React.useState(profile.email || '');
   const [phone, setPhone] = React.useState(profile.phone || '');
   const [error, setError] = React.useState('');
+  const [currency, setCurrency] = React.useState<EastAfricanCurrency>(profile.currency || detectCurrency());
 
   React.useEffect(() => {
     if (visible) {
       setName(profile.name);
       setEmail(profile.email || '');
       setPhone(profile.phone || '');
+      setCurrency(profile.currency || detectCurrency());
       setError('');
     }
   }, [visible, profile]);
@@ -38,6 +41,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ visible, profile, re
       name: name.trim(),
       email: email.trim() || undefined,
       phone: phone.trim() || undefined,
+      currency,
     });
     onClose();
   };
@@ -66,7 +70,14 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ visible, profile, re
           <TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder="you@example.com" placeholderTextColor="#92989B" keyboardType="email-address" />
           <Text style={styles.label}>Phone</Text>
           <TextInput style={styles.input} value={phone} onChangeText={setPhone} placeholder="Phone number" placeholderTextColor="#92989B" keyboardType="phone-pad" />
-
+<Text style={styles.label}>Currency</Text>
+<View style={styles.currencyRow}>
+  {CURRENCIES.map((c) => (
+    <Pressable key={c} onPress={() => setCurrency(c)} style={[styles.chip, currency === c && styles.chipActive]}>
+      <Text style={[styles.chipText, currency === c && styles.chipTextActive]}>{c}</Text>
+    </Pressable>
+  ))}
+</View>
           <Pressable style={({ pressed }) => [styles.saveButton, pressed && styles.pressed]} onPress={handleSave}>
             <Text style={styles.saveText}>{required ? 'Create account' : 'Save profile'}</Text>
           </Pressable>
@@ -89,4 +100,10 @@ const styles = StyleSheet.create({
   saveButton: { backgroundColor: '#1D4C35', borderRadius: 10, height: 48, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   saveText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   pressed: { opacity: 0.75 },
+    currencyRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 },
+  chip: { borderWidth: 1, borderColor: '#E0E6DF', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, marginRight: 8, marginTop: 8 },
+  chipActive: { backgroundColor: '#1D4C35', borderColor: '#1D4C35' },
+  chipText: { color: '#526058', fontSize: 12, fontWeight: '700' },
+  chipTextActive: { color: '#FFFFFF' },
 });
+
