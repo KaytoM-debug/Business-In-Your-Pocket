@@ -19,6 +19,7 @@ const currencyByRegion: Record<string, EastAfricanCurrency> = {
 };
 
 let activeCurrency: EastAfricanCurrency = 'UGX';
+export const getActiveCurrency = () => activeCurrency;
 
 export const detectCurrency = (): EastAfricanCurrency => {
   const locale = Intl.DateTimeFormat().resolvedOptions().locale;
