@@ -1,3 +1,4 @@
+import { getActiveCurrency } from '../utils/calculations';
 import React from 'react';
 import { Modal, View, Text, StyleSheet, Pressable, TextInput, ScrollView } from 'react-native';
 
@@ -130,7 +131,7 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
             <View style={styles.field}>
               <Text style={styles.label}>Unit Price *</Text>
               <View style={styles.inputWrapper}>
-                <Text style={styles.currencySymbol}>$</Text>
+                <Text style={styles.currencySymbol}>{getActiveCurrency()}</Text>
                 <TextInput
                   style={[styles.textInput, styles.priceInput]}
                   placeholder="0.00"
