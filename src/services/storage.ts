@@ -1,3 +1,5 @@
+
+import AsyncStorage from '@react-native-async-storage/async-storage
 import { Transaction, Customer, InventoryItem, DailyMetrics, UserProfile } from '../types/index';
 
 const STORAGE_KEYS = {
@@ -12,7 +14,7 @@ const STORAGE_KEYS = {
 let memoryStorage: { [key: string]: string } = {};
 
 class StorageService {
-  private useMemory = true; // Default to memory storage
+  private useMemory = false;; // Default to memory storage
 
   async setUseAsyncStorage(enabled: boolean) {
     this.useMemory = !enabled;
@@ -25,7 +27,7 @@ class StorageService {
       }
       // Will use AsyncStorage when installed
       // const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
-      // return AsyncStorage.getItem(key);
+      return AsyncStorage.getItem(key);y);
       return memoryStorage[key] || null;
     } catch (error) {
       console.error(`Error reading from storage (${key}):`, error);
@@ -40,7 +42,7 @@ class StorageService {
       } else {
         // Will use AsyncStorage when installed
         // const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
-        // await AsyncStorage.setItem(key, value);
+        await AsyncStorage.setItem(key, value);alue);
         memoryStorage[key] = value;
       }
     } catch (error) {
