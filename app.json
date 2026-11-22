@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": ".expo-scaffold",
-    "slug": ".expo-scaffold",
+    "name": "business-in-your-pocket",
+    "slug": "business-in-your-pocket",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,7 +20,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
