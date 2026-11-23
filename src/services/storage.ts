@@ -1,5 +1,5 @@
 
-import AsyncStorage from '@react-native-async-storage/async-storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Transaction, Customer, InventoryItem, DailyMetrics, UserProfile } from '../types/index';
 
 const STORAGE_KEYS = {
