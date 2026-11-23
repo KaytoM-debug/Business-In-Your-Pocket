@@ -27,7 +27,7 @@ class StorageService {
       }
       // Will use AsyncStorage when installed
       // const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
-      return AsyncStorage.getItem(key);y);
+     // return AsyncStorage.getItem(key);y);
       return memoryStorage[key] || null;
     } catch (error) {
       console.error(`Error reading from storage (${key}):`, error);
@@ -42,7 +42,7 @@ class StorageService {
       } else {
         // Will use AsyncStorage when installed
         // const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
-        await AsyncStorage.setItem(key, value);alue);
+        // await AsyncStorage.setItem(key, value);alue);
         memoryStorage[key] = value;
       }
     } catch (error) {
