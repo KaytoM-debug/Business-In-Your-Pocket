@@ -77,7 +77,7 @@ export default function App() {
   }, []);
 
   // Handle add transaction
-  const handleAddTransaction = async (data: { title: string; amount: number; detail: string; date: string }, type: 'sale' | 'expense') => {
+  const handleAddTransactionOld = async (data: { title: string; amount: number; detail: string; date: string }, type: 'sale' | 'expense') => {
     const newTransaction: Transaction = {
       id: generateId(),
       title: data.title,
@@ -126,7 +126,7 @@ export default function App() {
   };
 
   // Handle delete transaction
-  const handleDeleteTransaction = async (id: string) => {
+  const handleDeleteTransactionOld = async (id: string) => {
     await storageService.deleteTransaction(id);
     setTransactions(transactions.filter(t => t.id !== id));
   };
@@ -144,7 +144,7 @@ export default function App() {
   };
 
   // Handle edit transaction
-  const handleEditTransaction = async (id: string, data: { title: string; amount: number; detail: string; date: string }) => {
+  const handleEditTransactionOld = async (id: string, data: { title: string; amount: number; detail: string; date: string }) => {
     await storageService.updateTransaction(id, {
       title: data.title,
       amount: data.amount,
@@ -158,7 +158,7 @@ export default function App() {
   };
 
   // Handle edit customer
-  const handleEditCustomer = async (id: string, data: { name: string; email?: string; phone?: string }) => {
+  const handleEditCustomerOld = async (id: string, data: { name: string; email?: string; phone?: string }) => {
     await storageService.updateCustomer(id, {
       name: data.name,
       email: data.email,
@@ -185,7 +185,105 @@ export default function App() {
       )
     );
   };
+  const sameName = (a: string, b: string) =>
+    a.trim().toLowerCase() === b.trim().toLowerCase();
 
+  const todayDate = () => new Date().toISOString().split('T')[0];
+
+  const applySale = async (sale: Transaction, direction: 1 | -1) => {
+    const amount = Number(sale.amount);
+    const customer = customers.find(c => sameName(c.name, sale.title));
+    if (customer) {
+      const changes = {
+        totalSpent: Math.max(0, customer.totalSpent + direction * amount),
+        lastOrderDate: direction === 1 ? todayDate() : customer.lastOrderDate,
+      };
+      await storageService.updateCustomer(customer.id, changes);
+      setCustomers(
+        customers.map(c => (c.id === customer.id ? { ...c, ...changes } : c))
+      );
+    } else if (direction === 1) {
+      const newCustomer: Customer = {
+        id: generateId(),
+        name: sale.title.trim(),
+        email: '',
+        phone: '',
+        totalSpent: amount,
+        lastOrderDate: todayDate(),
+        orders: [],
+      };
+      await storageService.addCustomer(newCustomer);
+      setCustomers([newCustomer, ...customers]);
+    }
+    const item = inventory.find(i => sameName(i.name, sale.detail));
+    if (item) {
+      const changes = { quantity: Math.max(0, item.quantity - direction) };
+      await storageService.updateInventoryItem(item.id, changes);
+      setInventory(
+        inventory.map(i => (i.id === item.id ? { ...i, ...changes } : i))
+      );
+    }
+  };
+
+  const handleAddTransaction = async (
+    ...args: Parameters<typeof handleAddTransactionOld>
+  ) => {
+    await handleAddTransactionOld(...args);
+    const all = await storageService.getTransactions();
+    if (all.length === 0) return;
+    const newest = all.reduce((a, b) =>
+      (b.timestamp ?? 0) > (a.timestamp ?? 0) ? b : a
+    );
+    if (newest.type === 'sale') await applySale(newest, 1);
+  };
+
+  const handleDeleteTransaction = async (id: string) => {
+    const removed = transactions.find(t => t.id === id);
+    await handleDeleteTransactionOld(id);
+    if (removed && removed.type === 'sale') await applySale(removed, -1);
+  };
+    const renameEverywhere = async (oldName: string, newName: string) => {
+    const customer = customers.find(c => sameName(c.name, oldName));
+    if (customer && customer.name !== newName) {
+      await storageService.updateCustomer(customer.id, { name: newName });
+      setCustomers(prev =>
+        prev.map(c => (c.id === customer.id ? { ...c, name: newName } : c))
+      );
+    }
+    const affected = transactions.filter(
+      t => sameName(t.title, oldName) && t.title !== newName
+    );
+    for (const t of affected) {
+      await storageService.updateTransaction(t.id, { title: newName });
+    }
+    setTransactions(prev =>
+      prev.map(t =>
+        sameName(t.title, oldName) ? { ...t, title: newName } : t
+      )
+    );
+  };
+
+  const handleEditTransaction = async (
+    ...args: Parameters<typeof handleEditTransactionOld>
+  ) => {
+    const [id, data] = args;
+    const before = transactions.find(t => t.id === id);
+    await handleEditTransactionOld(...args);
+    if (before && data.title && before.title !== data.title.trim()) {
+      await renameEverywhere(before.title, data.title.trim());
+    }
+  };
+
+  const handleEditCustomer = async (
+    ...args: Parameters<typeof handleEditCustomerOld>
+  ) => {
+    const [id, data] = args;
+    const before = customers.find(c => c.id === id);
+    await handleEditCustomerOld(...args);
+    if (before && data.name && before.name !== data.name.trim()) {
+      await renameEverywhere(before.name, data.name.trim());
+    }
+  };
   const renderContent = () => {
     switch (activeTab) {
       case 'Overview':
